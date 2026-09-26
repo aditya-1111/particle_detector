@@ -1,21 +1,31 @@
 const r = require("raylib");
 
 const windowWidth = 900;
-const windowHeight = 600;
+const windowHeight = 500;
 
-let scannerX = 0;
 const scannerWidth = 50;
-const rightEdge = windowWidth - scannerWidth;
-let scannerColor = r.WHITE;
 
-let isScannerMovingForward = true;
-const speed = 5;
+let scannerAX = 0;
+let scannerAColor = r.WHITE;
+const scanARightEdge = windowWidth / 2 - scannerWidth;
+const scanALeftEnd = 0;
+
+let scannerBX = windowWidth / 2;
+let scannerBColor = r.WHITE;
+const scanBRightEdge = windowWidth - scannerWidth;
+const scanBLeftEdge = windowWidth / 2;
+
+let scannerAForward = true;
+let scannerBForward = true;
+
+const scannerASpeed = 5;
+const scannerBSpeed = 3;
 
 const particleAX = 320;
-const particleAWidth = 120;
+const particleAWidth = 130;
 
 const particleBX = 600;
-const particleBWidth = 10;
+const particleBWidth = 20;
 
 function setup() {
     r.InitWindow(windowWidth, windowHeight, "Particle Detector");
@@ -30,63 +40,51 @@ function moveScanner(shouldMoveForward, speed) {
     return (shouldMoveForward) ? speed : -speed;
 }
 
-function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMovingForward) {
-    if (currentPosition >= endFromRight) {
-        return false;
-    }
+function shouldMoveForward(currentPosition, endFromRight, endFromLeft, isMovingForward) {
 
-    if (currentPosition < 0) {
-        return true;
-    }
-
-    return isScannerMovingForward;
+    return (currentPosition >= endFromRight) || (currentPosition < endFromLeft) ? !isMovingForward : isMovingForward;
 }
 
-function detectOverlapping(rangeAX, rangeAWidth, rangeBX, rangeBWidth) {
+function detectOverlap(rangeAX, rangeAWidth, rangeBX, rangeBWidth) {
     const rangeARightEdge = rangeAX + rangeAWidth;
     const rangeBRightEdge = rangeBX + rangeBWidth;
 
-    if (rangeARightEdge >= rangeBX && rangeAX <= rangeBRightEdge) {
-        return true;
-    }
-
-    return false;
+    return (rangeARightEdge >= rangeBX && rangeAX <= rangeBRightEdge);
 }
 
-function isOverlappingEither(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) {
-    return (detectOverlapping(scannerX, scannerWidth, particleAX, particleAWidth) || detectOverlapping(scannerX, scannerWidth, particleBX, particleBWidth));
+function isOverlapping(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) {
+    return (detectOverlap(scannerX, scannerWidth, particleAX, particleAWidth) || detectOverlap(scannerX, scannerWidth, particleBX, particleBWidth));
 }
 
 function update() {
-    scannerX += moveScanner(isScannerMovingForward, speed);
+    scannerAX += moveScanner(scannerAForward, scannerASpeed);
+    scannerBX += moveScanner(scannerBForward, scannerBSpeed);
 
-    isScannerMovingForward = shouldScannerMoveForward(scannerX, rightEdge, isScannerMovingForward);
+    scannerAForward = shouldMoveForward(scannerAX, scanARightEdge, scanALeftEnd, scannerAForward);
 
-    scannerColor = isOverlappingEither(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
-}
+    scannerBForward = shouldMoveForward(scannerBX, scanBRightEdge, scanBLeftEdge, scannerBForward);
 
-function drawParticle(xPosition, yPosition, particleWidth, particleHeight) {
-    r.DrawRectangle(xPosition, yPosition, particleWidth, particleHeight, r.SKYBLUE);
+    scannerAColor = isOverlapping(scannerAX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
+
+    scannerBColor = isOverlapping(scannerBX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
 }
 
 function draw() {
     const scannerY = 0;
     const scannerHeight = windowHeight;
 
-    const particleAY = 0;
-    const particleAHeight = windowHeight;
-
-    const particleBY = 0;
-    const particleBHeight = windowHeight;
+    const particleY = 0;
+    const particleHeight = windowHeight;
 
     r.BeginDrawing();
 
     r.ClearBackground(r.BLACK);
 
-    drawParticle(particleAX, particleAY, particleAWidth, particleAHeight);
-    drawParticle(particleBX, particleBY, particleBWidth, particleBHeight);
+    r.DrawRectangle(particleAX, particleY, particleAWidth, particleHeight, r.SKYBLUE);
+    r.DrawRectangle(particleBX, particleY, particleBWidth, particleHeight, r.SKYBLUE);
 
-    r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, scannerColor);
+    r.DrawRectangle(scannerAX, scannerY, scannerWidth, scannerHeight, scannerAColor);
+    r.DrawRectangle(scannerBX, scannerY, scannerWidth, scannerHeight, scannerBColor);
 
     r.EndDrawing();
 }
