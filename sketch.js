@@ -1,31 +1,32 @@
 const r = require("raylib");
+const geo = require("./geometry");
 
 const windowWidth = 900;
 const windowHeight = 500;
 
-const scannerWidth = 50;
+const scanWidth = 50;
 
-let scannerAX = 0;
-let scannerAColor = r.WHITE;
-const scanARightEdge = windowWidth / 2 - scannerWidth;
-const scanALeftEnd = 0;
+let xOfScanA = 0;
+let colorOfScanA = r.WHITE;
+const scanARightEdge = windowWidth / 2 - scanWidth;
+const scanALeftEdge = 0;
 
-let scannerBX = windowWidth / 2;
-let scannerBColor = r.WHITE;
-const scanBRightEdge = windowWidth - scannerWidth;
+let xOfScanB = windowWidth / 2;
+let colorOfScanB = r.WHITE;
+const scanBRightEdge = windowWidth - scanWidth;
 const scanBLeftEdge = windowWidth / 2;
 
-let scannerAForward = true;
-let scannerBForward = true;
+let isScanAMovingForward = true;
+let isScanBMovingForward = true;
 
-const scannerASpeed = 5;
-const scannerBSpeed = 3;
+const speedOfScanA = 5;
+const speedOfScanB = 3;
 
-const particleAX = 320;
-const particleAWidth = 130;
+const xOfParticleA = 320;
+const widthOfParticleA = 130;
 
-const particleBX = 600;
-const particleBWidth = 20;
+const xOfParticleB = 600;
+const widthOfParticleB = 20;
 
 function setup() {
     r.InitWindow(windowWidth, windowHeight, "Particle Detector");
@@ -36,42 +37,42 @@ function running() {
     return !r.WindowShouldClose();
 }
 
-function moveScanner(shouldMoveForward, speed) {
-    return (shouldMoveForward) ? speed : -speed;
+function shouldMoveForward(currentPosition, stRange, endRange, isMovingForward) {
+    const isInsideRange = (currentPosition >= stRange) || (currentPosition < endRange)
+    return isInsideRange ? !isMovingForward : isMovingForward;
 }
 
-function shouldMoveForward(currentPosition, endFromRight, endFromLeft, isMovingForward) {
+function detectOverlap(xOfRangeA, rangeAWidth, xOfRangeB, rangeBWidth) {
+    const rangeARightEdge = xOfRangeA + rangeAWidth;
+    const rangeBRightEdge = xOfRangeB + rangeBWidth;
 
-    return (currentPosition >= endFromRight) || (currentPosition < endFromLeft) ? !isMovingForward : isMovingForward;
+    return ((rangeARightEdge >= xOfRangeB) && (xOfRangeA <= rangeBRightEdge));
 }
 
-function detectOverlap(rangeAX, rangeAWidth, rangeBX, rangeBWidth) {
-    const rangeARightEdge = rangeAX + rangeAWidth;
-    const rangeBRightEdge = rangeBX + rangeBWidth;
+function isOverlapping(scanX, scanWidth, xOfParticleA, particleAWidth, xOfParticleB, particleBWidth) {
+    const isOverlappingParticleA = detectOverlap(scanX, scanWidth, xOfParticleA, particleAWidth);
 
-    return (rangeARightEdge >= rangeBX && rangeAX <= rangeBRightEdge);
-}
+    const isOverlappingParticleB = detectOverlap(scanX, scanWidth, xOfParticleB, particleBWidth);
 
-function isOverlapping(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) {
-    return (detectOverlap(scannerX, scannerWidth, particleAX, particleAWidth) || detectOverlap(scannerX, scannerWidth, particleBX, particleBWidth));
+    return (isOverlappingParticleA || isOverlappingParticleB);
 }
 
 function update() {
-    scannerAX += moveScanner(scannerAForward, scannerASpeed);
-    scannerBX += moveScanner(scannerBForward, scannerBSpeed);
+    xOfScanA += geo.moveScanner(isScanAMovingForward, speedOfScanA);
+    xOfScanB += geo.moveScanner(isScanBMovingForward, speedOfScanB);
 
-    scannerAForward = shouldMoveForward(scannerAX, scanARightEdge, scanALeftEnd, scannerAForward);
+    isScanAMovingForward = shouldMoveForward(xOfScanA, scanARightEdge, scanALeftEdge, isScanAMovingForward);
 
-    scannerBForward = shouldMoveForward(scannerBX, scanBRightEdge, scanBLeftEdge, scannerBForward);
+    isScanBMovingForward = shouldMoveForward(xOfScanB, scanBRightEdge, scanBLeftEdge, isScanBMovingForward);
 
-    scannerAColor = isOverlapping(scannerAX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
+    colorOfScanA = isOverlapping(xOfScanA, scanWidth, xOfParticleA, widthOfParticleA, xOfParticleB, widthOfParticleB) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
 
-    scannerBColor = isOverlapping(scannerBX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
+    colorOfScanB = isOverlapping(xOfScanB, scanWidth, xOfParticleA, widthOfParticleA, xOfParticleB, widthOfParticleB) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
 }
 
 function draw() {
-    const scannerY = 0;
-    const scannerHeight = windowHeight;
+    const scanY = 0;
+    const scanHeight = windowHeight;
 
     const particleY = 0;
     const particleHeight = windowHeight;
@@ -80,11 +81,11 @@ function draw() {
 
     r.ClearBackground(r.BLACK);
 
-    r.DrawRectangle(particleAX, particleY, particleAWidth, particleHeight, r.SKYBLUE);
-    r.DrawRectangle(particleBX, particleY, particleBWidth, particleHeight, r.SKYBLUE);
+    r.DrawRectangle(xOfParticleA, particleY, widthOfParticleA, particleHeight, r.SKYBLUE);
+    r.DrawRectangle(xOfParticleB, particleY, widthOfParticleB, particleHeight, r.SKYBLUE);
 
-    r.DrawRectangle(scannerAX, scannerY, scannerWidth, scannerHeight, scannerAColor);
-    r.DrawRectangle(scannerBX, scannerY, scannerWidth, scannerHeight, scannerBColor);
+    r.DrawRectangle(xOfScanA, scanY, scanWidth, scanHeight, colorOfScanA);
+    r.DrawRectangle(xOfScanB, scanY, scanWidth, scanHeight, colorOfScanB);
 
     r.EndDrawing();
 }

@@ -1,7 +1,7 @@
-function calcOffset(outer, inner) {
-    return (outer - inner) / 2;
+function moveScanner(shouldMoveForward, speed) {
+    return (shouldMoveForward) ? speed : -speed;
 }
 
 module.exports = {
-    calcOffset,
+    moveScanner
 };
