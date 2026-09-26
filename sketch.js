@@ -6,6 +6,7 @@ const windowHeight = 600;
 let scannerX = 0;
 const scannerWidth = 50;
 const rightEdge = windowWidth - scannerWidth;
+let scannerColor = r.WHITE;
 
 let isScannerMovingForward = true;
 const speed = 5;
@@ -37,14 +38,27 @@ function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMoving
     return isScannerMovingForward;
 }
 
-function drawParticle(xPosition, particleWidth) {
-    r.DrawRectangle(xPosition, 0, particleWidth, windowHeight, r.SKYBLUE);
+function detectOverlapping(rangeAX, rangeAWidth, rangeBX, rangeBWidth) {
+    const rangeARightEdge = rangeAX + rangeAWidth;
+    const rangeBRightEdge = rangeBX + rangeBWidth;
+
+    if (rangeARightEdge >= rangeBX && rangeAX <= rangeBRightEdge) {
+        return true;
+    }
+
+    return false;
 }
 
 function update() {
     scannerX += moveScanner(isScannerMovingForward, speed);
 
     isScannerMovingForward = shouldScannerMoveForward(scannerX, rightEdge, isScannerMovingForward);
+
+    scannerColor = detectOverlapping(scannerX, scannerWidth, particleX, particleWidth) ? r.RED : r.WHITE;
+}
+
+function drawParticle(xPosition, particleWidth) {
+    r.DrawRectangle(xPosition, 0, particleWidth, windowHeight, r.SKYBLUE);
 }
 
 function draw() {
@@ -56,7 +70,7 @@ function draw() {
     r.ClearBackground(r.BLACK);
 
     drawParticle(particleX, particleWidth);
-    r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, r.WHITE);
+    r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, scannerColor);
 
     r.EndDrawing();
 }
