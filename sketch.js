@@ -3,22 +3,27 @@ const r = require("raylib");
 const windowWidth = 900
 const windowHeight = 600
 
+let scannerX = 0;
 const scannerWidth = 50;
-const scannerHeight = windowHeight;
 const rightEdge = windowWidth - scannerWidth;
 
-let scannerX = 0;
-let scannerY = 0;
 let isScannerMovingForward = true;
+const speed = 5;
+
+const particleX = 350;
+const particleWidth = 120;
 
 function setup() {
-    2
-    r.InitWindow(windowWidth, windowHeight, "Particle Detector")
-    r.SetTargetFPS(60)
+    r.InitWindow(windowWidth, windowHeight, "Particle Detector");
+    r.SetTargetFPS(60);
 }
 
-function moveScanner(shouldMoveForward) {
-    return (shouldMoveForward) ? 5 : -5;
+function running() {
+    return !r.WindowShouldClose();
+}
+
+function moveScanner(shouldMoveForward, speed) {
+    return (shouldMoveForward) ? speed : -speed;
 }
 
 function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMovingForward) {
@@ -33,22 +38,26 @@ function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMoving
 }
 
 function update() {
-    scannerX += moveScanner(isScannerMovingForward);
+    scannerX += moveScanner(isScannerMovingForward, speed);
 
     isScannerMovingForward = shouldScannerMoveForward(scannerX, rightEdge, isScannerMovingForward);
 }
 
 function draw() {
+    const scannerY = 0;
+    const scannerHeight = windowHeight;
+
+    const particleY = 0;
+    const particleHeight = windowHeight;
+
     r.BeginDrawing()
+
     r.ClearBackground(r.BLACK)
 
+    r.DrawRectangle(particleX, particleY, particleWidth, particleHeight, r.SKYBLUE)
     r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, r.WHITE)
 
     r.EndDrawing()
-}
-
-function running() {
-    return !r.WindowShouldClose();
 }
 
 function teardown() {
