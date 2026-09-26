@@ -11,8 +11,11 @@ let scannerColor = r.WHITE;
 let isScannerMovingForward = true;
 const speed = 5;
 
-const particleX = 350;
-const particleWidth = 120;
+const particleAX = 320;
+const particleAWidth = 120;
+
+const particleBX = 600;
+const particleBWidth = 10;
 
 function setup() {
     r.InitWindow(windowWidth, windowHeight, "Particle Detector");
@@ -31,6 +34,7 @@ function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMoving
     if (currentPosition >= endFromRight) {
         return false;
     }
+
     if (currentPosition < 0) {
         return true;
     }
@@ -49,27 +53,39 @@ function detectOverlapping(rangeAX, rangeAWidth, rangeBX, rangeBWidth) {
     return false;
 }
 
+function isOverlappingEither(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) {
+    return (detectOverlapping(scannerX, scannerWidth, particleAX, particleAWidth) || detectOverlapping(scannerX, scannerWidth, particleBX, particleBWidth));
+}
+
 function update() {
     scannerX += moveScanner(isScannerMovingForward, speed);
 
     isScannerMovingForward = shouldScannerMoveForward(scannerX, rightEdge, isScannerMovingForward);
 
-    scannerColor = detectOverlapping(scannerX, scannerWidth, particleX, particleWidth) ? r.RED : r.WHITE;
+    scannerColor = isOverlappingEither(scannerX, scannerWidth, particleAX, particleAWidth, particleBX, particleBWidth) ? r.ColorAlpha(r.RED, 0.5) : r.WHITE;
 }
 
-function drawParticle(xPosition, particleWidth) {
-    r.DrawRectangle(xPosition, 0, particleWidth, windowHeight, r.SKYBLUE);
+function drawParticle(xPosition, yPosition, particleWidth, particleHeight) {
+    r.DrawRectangle(xPosition, yPosition, particleWidth, particleHeight, r.SKYBLUE);
 }
 
 function draw() {
     const scannerY = 0;
     const scannerHeight = windowHeight;
 
+    const particleAY = 0;
+    const particleAHeight = windowHeight;
+
+    const particleBY = 0;
+    const particleBHeight = windowHeight;
+
     r.BeginDrawing();
 
     r.ClearBackground(r.BLACK);
 
-    drawParticle(particleX, particleWidth);
+    drawParticle(particleAX, particleAY, particleAWidth, particleAHeight);
+    drawParticle(particleBX, particleBY, particleBWidth, particleBHeight);
+
     r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, scannerColor);
 
     r.EndDrawing();
