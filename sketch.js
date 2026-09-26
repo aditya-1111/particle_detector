@@ -1,7 +1,7 @@
 const r = require("raylib");
 
-const windowWidth = 900
-const windowHeight = 600
+const windowWidth = 900;
+const windowHeight = 600;
 
 let scannerX = 0;
 const scannerWidth = 50;
@@ -37,6 +37,10 @@ function shouldScannerMoveForward(currentPosition, endFromRight, isScannerMoving
     return isScannerMovingForward;
 }
 
+function drawParticle(xPosition, particleWidth) {
+    r.DrawRectangle(xPosition, 0, particleWidth, windowHeight, r.SKYBLUE);
+}
+
 function update() {
     scannerX += moveScanner(isScannerMovingForward, speed);
 
@@ -47,17 +51,14 @@ function draw() {
     const scannerY = 0;
     const scannerHeight = windowHeight;
 
-    const particleY = 0;
-    const particleHeight = windowHeight;
+    r.BeginDrawing();
 
-    r.BeginDrawing()
+    r.ClearBackground(r.BLACK);
 
-    r.ClearBackground(r.BLACK)
+    drawParticle(particleX, particleWidth);
+    r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, r.WHITE);
 
-    r.DrawRectangle(particleX, particleY, particleWidth, particleHeight, r.SKYBLUE)
-    r.DrawRectangle(scannerX, scannerY, scannerWidth, scannerHeight, r.WHITE)
-
-    r.EndDrawing()
+    r.EndDrawing();
 }
 
 function teardown() {
