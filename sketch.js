@@ -1,39 +1,29 @@
 const r = require("raylib");
 const g = require("./geometry");
 const p = require("./particle");
+const s1 = require("./s1");
+const s2 = require("./s2");
+const s3 = require("./s3");
 
-const WIDTH = 900;
+const WIDTH = 800;
 const HEIGHT = 500;
 const ALPHA = 0.5;
 
 const scanWidth = 40;
 
-// Scanner A
-let xOfScanA = 0;
-const scanALeftEdge = 0;
-const scanARightEdge = WIDTH / 2 - scanWidth;
-let velocityOfScanA = 4;
-
-// Scanner B
-let xOfScanB = WIDTH / 2;
-const scanBLeftEdge = WIDTH / 2;
-const scanBRightEdge = WIDTH - scanWidth;
-let velocityOfScanB = 3;
-
-// Scanner C
-let yOfVertScan = 0;
-const vertScanHeight = 40;
-const vertScanLeftEdge = 0;
-const vertScanRightEdge = HEIGHT - vertScanHeight;
-let velocityOfVertScan = 5;
-
-// Color of Scanner
-let colorOfScanA;
-let colorOfScanB;
-let colorOfVertScan;
-
 function setup() {
     const FPS = 60;
+
+    p.particleHeight = HEIGHT;
+    p.vertParticleWidth = WIDTH;
+
+    s2.x = WIDTH / 2;
+    s1.rightEdge = WIDTH / 2 - scanWidth;
+
+    s2.leftEdge = WIDTH / 2;
+    s2.rightEdge = WIDTH - scanWidth;
+
+    s3.rightEdge = HEIGHT - s3.height;
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(WIDTH, HEIGHT, "Particle Detector");
@@ -45,21 +35,25 @@ function running() {
 }
 
 function updateVelocities() {
-    velocityOfScanA = g.calculateVelocity(xOfScanA, scanALeftEdge, scanARightEdge, velocityOfScanA);
-    velocityOfScanB = g.calculateVelocity(xOfScanB, scanBLeftEdge, scanBRightEdge, velocityOfScanB);
-    velocityOfVertScan = g.calculateVelocity(yOfVertScan, vertScanLeftEdge, vertScanRightEdge, velocityOfVertScan);
+    s1.velocity = g.calculateVelocity(s1.x, s1.leftEdge, s1.rightEdge, s1.velocity);
+    s2.velocity = g.calculateVelocity(s2.x, s2.leftEdge, s2.rightEdge, s2.velocity);
+    s3.velocity = g.calculateVelocity(s3.y, s3.leftEdge, s3.rightEdge, s3.velocity);
 }
 
 function moveScanners() {
-    xOfScanA = g.moveScanner(xOfScanA, velocityOfScanA);
-    xOfScanB = g.moveScanner(xOfScanB, velocityOfScanB);
-    yOfVertScan = g.moveScanner(yOfVertScan, velocityOfVertScan);
+    s1.x = g.moveScanner(s1.x, s1.velocity);
+    s2.x = g.moveScanner(s2.x, s2.velocity);
+    s3.y = g.moveScanner(s3.y, s3.velocity);
+}
+
+function decideScannerColor(isOverlapped) {
+    return isOverlapped ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
 }
 
 function determineScannersColours() {
-    colorOfScanA = g.isOverlapping(xOfScanA, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB) ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
-    colorOfScanB = g.isOverlapping(xOfScanB, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB) ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
-    colorOfVertScan = g.isOverlapping(yOfVertScan, vertScanHeight, p.yOfC, p.heightOfC) ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
+    s1.color = decideScannerColor(g.isOverlapping(s1.x, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB));
+    s2.color = decideScannerColor(g.isOverlapping(s2.x, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB));
+    s3.color = decideScannerColor(g.isOverlapping(s3.y, s3.height, p.yOfC, p.heightOfC));
 }
 
 function update() {
@@ -69,23 +63,18 @@ function update() {
 }
 
 function drawParticles() {
-    const particleHeight = HEIGHT;
-    const vertParticleWidth = WIDTH;
-
-    r.DrawRectangle(p.xOfA, p.particleY, p.widthOfA, particleHeight, r.SKYBLUE);
-    r.DrawRectangle(p.xOfB, p.particleY, p.widthOfB, particleHeight, r.SKYBLUE);
-    r.DrawRectangle(p.xOfVert, p.yOfC, vertParticleWidth, p.heightOfC, r.SKYBLUE);
+    r.DrawRectangle(p.xOfA, p.particleY, p.widthOfA, p.particleHeight, r.SKYBLUE);
+    r.DrawRectangle(p.xOfB, p.particleY, p.widthOfB, p.particleHeight, r.SKYBLUE);
+    r.DrawRectangle(p.xOfVert, p.yOfC, p.vertParticleWidth, p.heightOfC, r.SKYBLUE);
 }
 
 function drawScanners() {
-    const scanY = 0;
     const scanHeight = HEIGHT;
-    const xOfVertScan = 0;
     const vertScanWidth = WIDTH;
 
-    r.DrawRectangle(xOfScanA, scanY, scanWidth, scanHeight, colorOfScanA);
-    r.DrawRectangle(xOfScanB, scanY, scanWidth, scanHeight, colorOfScanB);
-    r.DrawRectangle(xOfVertScan, yOfVertScan, vertScanWidth, vertScanHeight, colorOfVertScan);
+    r.DrawRectangle(s1.x, s1.y, scanWidth, scanHeight, s1.color);
+    r.DrawRectangle(s2.x, s2.y, scanWidth, scanHeight, s2.color);
+    r.DrawRectangle(s3.x, s3.y, vertScanWidth, s3.height, s3.color);
 }
 
 function draw() {

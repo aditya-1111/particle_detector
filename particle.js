@@ -13,6 +13,8 @@ const heightOfC = 20;
 const xOfVert = 0;
 const particleY = 0;
 
+let particleHeight;
+let vertParticleWidth;
 
 module.exports = {
     xOfA,
@@ -22,5 +24,7 @@ module.exports = {
     yOfC,
     heightOfC,
     xOfVert,
-    particleY
+    particleY,
+    particleHeight,
+    vertParticleWidth
 }
