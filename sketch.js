@@ -18,7 +18,7 @@ function setup() {
     p.vertParticleWidth = WIDTH;
 
     s2.x = WIDTH / 2;
-    s1.rightEdge = WIDTH / 2 - scanWidth;
+    s1.rightEdge = (WIDTH / 2) - scanWidth;
 
     s2.leftEdge = WIDTH / 2;
     s2.rightEdge = WIDTH - scanWidth;
