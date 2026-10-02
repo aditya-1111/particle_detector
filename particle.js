@@ -1,30 +1,27 @@
-// Particle A
-const xOfA = 320;
-const widthOfA = 130;
 
-// Particle B
-const xOfB = 600;
-const widthOfB = 20;
 
 // Particle C
-const yOfC = 350;
-const heightOfC = 20;
+const c = {
+    x: 0,
+    y: 350,
+    height: 20,
+}
 
-const xOfVert = 0;
-const particleY = 0;
+let height;
+let vertWidth;
 
-let particleHeight;
-let vertParticleWidth;
+function createParticle(x, y, width, height) {
+    return {
+        x,
+        y,
+        width,
+        height
+    }
+}
 
 module.exports = {
-    xOfA,
-    widthOfA,
-    xOfB,
-    widthOfB,
-    yOfC,
-    heightOfC,
-    xOfVert,
-    particleY,
-    particleHeight,
-    vertParticleWidth
+    height,
+    vertWidth,
+    c,
+    createParticle
 }

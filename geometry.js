@@ -1,16 +1,6 @@
-function moveScanner(currentPosition, velocity) {
-    return currentPosition + velocity;
-}
-
-function calculateVelocity(currentPosition, stRange, endRange, velocity) {
-    const isInsideRange = (currentPosition >= endRange) || (currentPosition < stRange);
-
-    return isInsideRange ? -velocity : velocity;
-}
-
-function isOverlapping(scanX, scanWidth, xOfParticleA, particleAWidth, xOfParticleB, particleBWidth) {
-    const isOverlapInParticleA = detectOverlap(scanX, scanWidth, xOfParticleA, particleAWidth);
-    const isOverlapInParticleB = detectOverlap(scanX, scanWidth, xOfParticleB, particleBWidth);
+function isOverlapping(scan, particleA, particleB) {
+    const isOverlapInParticleA = detectOverlap(scan.x, scan.width, particleA.x, particleA.width);
+    const isOverlapInParticleB = detectOverlap(scan.x, scan.width, particleB.x, particleB.width);
 
     return (isOverlapInParticleA || isOverlapInParticleB);
 }
@@ -23,7 +13,6 @@ function detectOverlap(xOfRangeA, rangeAWidth, xOfRangeB, rangeBWidth) {
 }
 
 module.exports = {
-    moveScanner,
     isOverlapping,
-    calculateVelocity
+    detectOverlap
 };

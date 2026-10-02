@@ -1,29 +1,39 @@
 const r = require("raylib");
 const g = require("./geometry");
 const p = require("./particle");
-const s1 = require("./s1");
-const s2 = require("./s2");
-const s3 = require("./s3");
+const sc = require("./scanner");
 
 const WIDTH = 800;
 const HEIGHT = 500;
 const ALPHA = 0.5;
 
-const scanWidth = 40;
+let p1;
+let p2;
+let p3;
+
+let s1;
+let s2;
+let s3;
 
 function setup() {
     const FPS = 60;
 
-    p.particleHeight = HEIGHT;
-    p.vertParticleWidth = WIDTH;
+    p1 = p.createParticle(320, 0, 130, HEIGHT);
+    p2 = p.createParticle(600, 0, 20, HEIGHT);
+    p3 = p.createParticle(0, 350, WIDTH, 20);
 
-    s2.x = WIDTH / 2;
-    s1.rightEdge = (WIDTH / 2) - scanWidth;
+    s1 = sc.createScanner(0, 0, 40, HEIGHT, 3);
+    s2 = sc.createScanner((WIDTH / 2), 0, 40, HEIGHT, 6);
+    s3 = sc.createScanner(0, 0, WIDTH, 40, 2);
+
+    s1.rightEdge = (WIDTH / 2) - s1.width;
+    s1.leftEdge = 0;
 
     s2.leftEdge = WIDTH / 2;
-    s2.rightEdge = WIDTH - scanWidth;
+    s2.rightEdge = WIDTH - s2.width;
 
     s3.rightEdge = HEIGHT - s3.height;
+    s3.leftEdge = 0
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(WIDTH, HEIGHT, "Particle Detector");
@@ -35,15 +45,15 @@ function running() {
 }
 
 function updateVelocities() {
-    s1.velocity = g.calculateVelocity(s1.x, s1.leftEdge, s1.rightEdge, s1.velocity);
-    s2.velocity = g.calculateVelocity(s2.x, s2.leftEdge, s2.rightEdge, s2.velocity);
-    s3.velocity = g.calculateVelocity(s3.y, s3.leftEdge, s3.rightEdge, s3.velocity);
+    s1.velocity = sc.calculateVelocity(s1.x, s1);
+    s2.velocity = sc.calculateVelocity(s2.x, s2);
+    s3.velocity = sc.calculateVelocity(s3.y, s3);
 }
 
 function moveScanners() {
-    s1.x = g.moveScanner(s1.x, s1.velocity);
-    s2.x = g.moveScanner(s2.x, s2.velocity);
-    s3.y = g.moveScanner(s3.y, s3.velocity);
+    s1.x = sc.moveScanner(s1.x, s1.velocity);
+    s2.x = sc.moveScanner(s2.x, s2.velocity);
+    s3.y = sc.moveScanner(s3.y, s3.velocity);
 }
 
 function decideScannerColor(isOverlapped) {
@@ -51,9 +61,9 @@ function decideScannerColor(isOverlapped) {
 }
 
 function determineScannersColours() {
-    s1.color = decideScannerColor(g.isOverlapping(s1.x, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB));
-    s2.color = decideScannerColor(g.isOverlapping(s2.x, scanWidth, p.xOfA, p.widthOfA, p.xOfB, p.widthOfB));
-    s3.color = decideScannerColor(g.isOverlapping(s3.y, s3.height, p.yOfC, p.heightOfC));
+    s1.color = decideScannerColor(g.isOverlapping(s1, p1, p2));
+    s2.color = decideScannerColor(g.isOverlapping(s2, p1, p2));
+    s3.color = decideScannerColor(g.detectOverlap(s3.y, s3.height, p.c.y, p.c.height));
 }
 
 function update() {
@@ -63,18 +73,16 @@ function update() {
 }
 
 function drawParticles() {
-    r.DrawRectangle(p.xOfA, p.particleY, p.widthOfA, p.particleHeight, r.SKYBLUE);
-    r.DrawRectangle(p.xOfB, p.particleY, p.widthOfB, p.particleHeight, r.SKYBLUE);
-    r.DrawRectangle(p.xOfVert, p.yOfC, p.vertParticleWidth, p.heightOfC, r.SKYBLUE);
+    r.DrawRectangleRec(p1, r.SKYBLUE);
+    r.DrawRectangleRec(p2, r.SKYBLUE);
+    r.DrawRectangleRec(p3, r.SKYBLUE);
 }
 
 function drawScanners() {
-    const scanHeight = HEIGHT;
-    const vertScanWidth = WIDTH;
 
-    r.DrawRectangle(s1.x, s1.y, scanWidth, scanHeight, s1.color);
-    r.DrawRectangle(s2.x, s2.y, scanWidth, scanHeight, s2.color);
-    r.DrawRectangle(s3.x, s3.y, vertScanWidth, s3.height, s3.color);
+    r.DrawRectangleRec(s1, s1.color);
+    r.DrawRectangleRec(s2, s2.color);
+    r.DrawRectangleRec(s3, s3.color);
 }
 
 function draw() {
