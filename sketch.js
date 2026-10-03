@@ -14,13 +14,13 @@ function setup() {
     world.p2 = p.createParticle(600, 0, 20, world.HEIGHT);
     world.p3 = p.createParticle(0, 350, world.WIDTH, 20);
 
-    world.s1 = sc.createScanner(0, 0, 40, world.HEIGHT, 0, 0, 2);
-    world.s2 = sc.createScanner((world.WIDTH / 2), 0, 40, world.HEIGHT, (world.WIDTH / 2), 0, 3);
-    world.s3 = sc.createScanner(0, 0, world.WIDTH, 40, 0, 0, 5);
+    world.s1 = sc.createScanner(0, 0, 40, world.HEIGHT, 0, (world.WIDTH / 2), 2);
+    world.s2 = sc.createScanner((world.WIDTH / 2), 0, 40, world.HEIGHT, (world.WIDTH / 2), world.WIDTH, 3);
+    world.s3 = sc.createScanner(0, 0, world.WIDTH, 40, 0, world.HEIGHT, 5);
 
-    world.s1.end = sc.getEnd((world.WIDTH / 2), world.s1.width);
-    world.s2.end = sc.getEnd(world.WIDTH, world.s2.width);
-    world.s3.end = sc.getEnd(world.HEIGHT, world.s3.height);
+    // world.s1.end = sc.getEnd((world.WIDTH / 2), world.s1.width);
+    // world.s2.end = sc.getEnd(world.WIDTH, world.s2.width);
+    // world.s3.end = sc.getEnd(world.HEIGHT, world.s3.height);
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.WIDTH, world.HEIGHT, world.TITLE);

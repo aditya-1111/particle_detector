@@ -14,18 +14,20 @@ function createScanner(x, y, width, height, st, end, velocity = 5) {
     }
 }
 
-function calculateVelocity(currentPosition, sc) {
-    const isInsideRange = (currentPosition >= sc.end) || (currentPosition < sc.st);
+function calculateVelocity(currentPosition, end, sc) {
+    const isInsideRange = (currentPosition >= end) || (currentPosition < sc.st);
     return isInsideRange ? -sc.velocity : sc.velocity;
 }
 
 function moveHorizontalScanner(currentPosition, sc) {
-    sc.velocity = calculateVelocity(sc.x, sc);
+    const end = s.end - s.width;
+    sc.velocity = calculateVelocity(sc.x, end, sc);
     return currentPosition + sc.velocity;
 }
 
 function moveVerticalScanner(currentPosition, sc) {
-    sc.velocity = calculateVelocity(sc.y, sc);
+    const end = s.end - s.height;
+    sc.velocity = calculateVelocity(sc.y, end, sc);
     return currentPosition + sc.velocity;
 }
 
@@ -40,11 +42,11 @@ function isOverlapping(scan, particleA, particleB) {
     return (isOverlapInParticleA || isOverlapInParticleB);
 }
 
-function detectOverlap(xOfRangeA, rangeAWidth, xOfRangeB, rangeBWidth) {
-    const rangeARightEdge = xOfRangeA + rangeAWidth;
-    const rangeBRightEdge = xOfRangeB + rangeBWidth;
+function detectOverlap(posOfRangeA, rangeAWidth, posOfRangeB, rangeBWidth) {
+    const rangeARightEdge = posOfRangeA + rangeAWidth;
+    const rangeBRightEdge = posOfRangeB + rangeBWidth;
 
-    return ((rangeARightEdge >= xOfRangeB) && (xOfRangeA <= rangeBRightEdge));
+    return ((rangeARightEdge >= posOfRangeB) && (posOfRangeA <= rangeBRightEdge));
 }
 
 function determineScannerColor(isOverlaping) {
