@@ -10,43 +10,41 @@ function createScanner(x, y, width, height, st, end, velocity = 5) {
         end,
         velocity,
         color: r.WHITE,
-        isDetected: false
+        hasOverlap: false
     }
 }
 
-function calculateVelocity(currentPosition, end, sc) {
-    const isInsideRange = (currentPosition >= end) || (currentPosition < sc.st);
-    return isInsideRange ? -sc.velocity : sc.velocity;
+function calculateVelocity(currentPosition, end, s) {
+    const isInsideRange = (currentPosition >= end) || (currentPosition < s.st);
+    return isInsideRange ? -s.velocity : s.velocity;
 }
 
-function moveHorizontalScanner(currentPosition, sc) {
+function moveHorizontalScanner(currentPosition, s) {
     const end = s.end - s.width;
-    sc.velocity = calculateVelocity(sc.x, end, sc);
-    return currentPosition + sc.velocity;
+    s.velocity = calculateVelocity(s.x, end, s);
+
+    return currentPosition + s.velocity;
 }
 
-function moveVerticalScanner(currentPosition, sc) {
+function moveVerticalScanner(currentPosition, s) {
     const end = s.end - s.height;
-    sc.velocity = calculateVelocity(sc.y, end, sc);
-    return currentPosition + sc.velocity;
+    s.velocity = calculateVelocity(s.y, end, s);
+
+    return currentPosition + s.velocity;
 }
 
-function getEnd(end, size) {
-    return end - size;
+function detectHorizontalOverlap(rangeA, rangeB) {
+    const rangeARightEdge = rangeA.x + rangeA.width;
+    const rangeBRightEdge = rangeB.x + rangeB.width;
+
+    return ((rangeARightEdge >= rangeB.x) && (rangeA.x <= rangeBRightEdge))
 }
 
-function isOverlapping(scan, particleA, particleB) {
-    const isOverlapInParticleA = detectOverlap(scan.x, scan.width, particleA.x, particleA.width);
-    const isOverlapInParticleB = detectOverlap(scan.x, scan.width, particleB.x, particleB.width);
+function detectVerticalOverlap(rangeA, rangeB) {
+    const rangeARightEdge = rangeA.y + rangeA.height;
+    const rangeBRightEdge = rangeB.y + rangeB.height;
 
-    return (isOverlapInParticleA || isOverlapInParticleB);
-}
-
-function detectOverlap(posOfRangeA, rangeAWidth, posOfRangeB, rangeBWidth) {
-    const rangeARightEdge = posOfRangeA + rangeAWidth;
-    const rangeBRightEdge = posOfRangeB + rangeBWidth;
-
-    return ((rangeARightEdge >= posOfRangeB) && (posOfRangeA <= rangeBRightEdge));
+    return ((rangeARightEdge >= rangeB.y) && (rangeA.y <= rangeBRightEdge))
 }
 
 function determineScannerColor(isOverlaping) {
@@ -55,7 +53,7 @@ function determineScannerColor(isOverlaping) {
 }
 
 function drawScanner(sc) {
-    sc.color = determineScannerColor(sc.isDetected);
+    sc.color = determineScannerColor(sc.hasOverlap);
     r.DrawRectangleRec(sc, sc.color);
 }
 
@@ -64,8 +62,7 @@ module.exports = {
     moveVerticalScanner,
     createScanner,
     calculateVelocity,
-    getEnd,
-    isOverlapping,
-    detectOverlap,
+    detectHorizontalOverlap,
+    detectVerticalOverlap,
     drawScanner
 }
