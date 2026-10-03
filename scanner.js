@@ -1,6 +1,6 @@
 const r = require("raylib");
 
-function createScanner(x, y, width, height, st, end, velocity = 5) {
+function createScanner(x, y, width, height, st, end, velocity) {
     return {
         x,
         y,
@@ -9,7 +9,6 @@ function createScanner(x, y, width, height, st, end, velocity = 5) {
         st,
         end,
         velocity,
-        color: r.WHITE,
         hasOverlap: false
     }
 }
@@ -19,14 +18,14 @@ function calculateVelocity(currentPosition, end, s) {
     return isInsideRange ? -s.velocity : s.velocity;
 }
 
-function moveHorizontalScanner(currentPosition, s) {
+function moveHorizontalScanner(s) {
     const end = s.end - s.width;
     s.velocity = calculateVelocity(s.x, end, s);
 
     return currentPosition + s.velocity;
 }
 
-function moveVerticalScanner(currentPosition, s) {
+function moveVerticalScanner(s) {
     const end = s.end - s.height;
     s.velocity = calculateVelocity(s.y, end, s);
 
@@ -53,8 +52,8 @@ function determineScannerColor(isOverlaping) {
 }
 
 function drawScanner(sc) {
-    sc.color = determineScannerColor(sc.hasOverlap);
-    r.DrawRectangleRec(sc, sc.color);
+    const color = determineScannerColor(sc.hasOverlap);
+    r.DrawRectangleRec(sc, color);
 }
 
 module.exports = {

@@ -30,9 +30,9 @@ function running() {
 }
 
 function moveScanners(world) {
-    world.s1.x = s.moveHorizontalScanner(world.s1.x, world.s1);
-    world.s2.x = s.moveHorizontalScanner(world.s2.x, world.s2);
-    world.s3.y = s.moveVerticalScanner(world.s3.y, world.s3);
+    world.s1.x = s.moveHorizontalScanner(world.s1);
+    world.s2.x = s.moveHorizontalScanner(world.s2);
+    world.s3.y = s.moveVerticalScanner(world.s3);
 }
 
 function determineScannersOverlapping(world) {
