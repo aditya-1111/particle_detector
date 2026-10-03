@@ -36,8 +36,8 @@ function moveScanners(world) {
 }
 
 function determineScannersOverlapping(world) {
-    world.s1.hasOverlap = s.detectHorizontalOverlap(world.s1, world.p1) || s.detectHorizontalOverlap(world.s1, world.p2);
-    world.s2.hasOverlap = s.detectHorizontalOverlap(world.s2, world.p1) || s.detectHorizontalOverlap(world.s2, world.p2);
+    world.s1.hasOverlap = s.detectHorizontalOverlaps(world.s1, world.p1, world.p2);
+    world.s2.hasOverlap = s.detectHorizontalOverlaps(world.s2, world.p1, world.p2);
     world.s3.hasOverlap = s.detectVerticalOverlap(world.s3, world.p3);
 }
 
