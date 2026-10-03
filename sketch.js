@@ -1,5 +1,4 @@
 const r = require("raylib");
-const g = require("./geometry");
 const p = require("./particle");
 const sc = require("./scanner");
 
@@ -52,9 +51,9 @@ function decideScannerColor(isOverlapped) {
 }
 
 function determineScannersColours(world) {
-    world.s1.color = decideScannerColor(g.isOverlapping(world.s1, world.p1, world.p2));
-    world.s2.color = decideScannerColor(g.isOverlapping(world.s2, world.p1, world.p2));
-    world.s3.color = decideScannerColor(g.detectOverlap(world.s3.y, world.s3.height, world.p3.y, world.p3.height));
+    world.s1.color = decideScannerColor(sc.isOverlapping(world.s1, world.p1, world.p2));
+    world.s2.color = decideScannerColor(sc.isOverlapping(world.s2, world.p1, world.p2));
+    world.s3.color = decideScannerColor(sc.detectOverlap(world.s3.y, world.s3.height, world.p3.y, world.p3.height));
 }
 
 function update(world) {
