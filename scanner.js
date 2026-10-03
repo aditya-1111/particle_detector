@@ -1,30 +1,36 @@
 const r = require("raylib");
 
-function calculateVelocity(currentPosition, sc) {
-    const isInsideRange = (currentPosition >= sc.rightEdge) || (currentPosition < sc.leftEdge);
-
-    return isInsideRange ? -sc.velocity : sc.velocity;
-}
-
-function createScanner(x, y, width, height, leftEdge, rightEdge, velocity = 5) {
+function createScanner(x, y, width, height, st, end, velocity = 5) {
     return {
         x,
         y,
         width,
         height,
-        leftEdge,
-        rightEdge,
+        st,
+        end,
         velocity,
         color: r.WHITE,
+        isDetected: false
     }
 }
 
-function moveScanner(currentPosition, velocity) {
-    return currentPosition + velocity;
+function calculateVelocity(currentPosition, sc) {
+    const isInsideRange = (currentPosition >= sc.end) || (currentPosition < sc.st);
+    return isInsideRange ? -sc.velocity : sc.velocity;
 }
 
-function getRightEdge(rightEnding, size) {
-    return rightEnding - size;
+function moveHorizontalScanner(currentPosition, sc) {
+    sc.velocity = calculateVelocity(sc.x, sc);
+    return currentPosition + sc.velocity;
+}
+
+function moveVerticalScanner(currentPosition, sc) {
+    sc.velocity = calculateVelocity(sc.y, sc);
+    return currentPosition + sc.velocity;
+}
+
+function getEnd(end, size) {
+    return end - size;
 }
 
 function isOverlapping(scan, particleA, particleB) {
@@ -41,11 +47,23 @@ function detectOverlap(xOfRangeA, rangeAWidth, xOfRangeB, rangeBWidth) {
     return ((rangeARightEdge >= xOfRangeB) && (xOfRangeA <= rangeBRightEdge));
 }
 
+function determineScannerColor(isOverlaping) {
+    const ALPHA = 0.5;
+    return isOverlaping ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
+}
+
+function drawScanner(sc) {
+    sc.color = determineScannerColor(sc.isDetected);
+    r.DrawRectangleRec(sc, sc.color);
+}
+
 module.exports = {
-    moveScanner,
+    moveHorizontalScanner,
+    moveVerticalScanner,
     createScanner,
     calculateVelocity,
-    getRightEdge,
+    getEnd,
     isOverlapping,
-    detectOverlap
+    detectOverlap,
+    drawScanner
 }

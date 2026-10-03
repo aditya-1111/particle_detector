@@ -18,9 +18,9 @@ function setup() {
     world.s2 = sc.createScanner((world.WIDTH / 2), 0, 40, world.HEIGHT, (world.WIDTH / 2), 0, 3);
     world.s3 = sc.createScanner(0, 0, world.WIDTH, 40, 0, 0, 5);
 
-    world.s1.rightEdge = sc.getRightEdge((world.WIDTH / 2), world.s1.width);
-    world.s2.rightEdge = sc.getRightEdge(world.WIDTH, world.s2.width);
-    world.s3.rightEdge = sc.getRightEdge(world.HEIGHT, world.s3.height);
+    world.s1.end = sc.getEnd((world.WIDTH / 2), world.s1.width);
+    world.s2.end = sc.getEnd(world.WIDTH, world.s2.width);
+    world.s3.end = sc.getEnd(world.HEIGHT, world.s3.height);
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.WIDTH, world.HEIGHT, world.TITLE);
@@ -33,45 +33,33 @@ function running() {
     return !r.WindowShouldClose();
 }
 
-function updateVelocities(world) {
-    world.s1.velocity = sc.calculateVelocity(world.s1.x, world.s1);
-    world.s2.velocity = sc.calculateVelocity(world.s2.x, world.s2);
-    world.s3.velocity = sc.calculateVelocity(world.s3.y, world.s3);
-}
-
 function moveScanners(world) {
-    world.s1.x = sc.moveScanner(world.s1.x, world.s1.velocity);
-    world.s2.x = sc.moveScanner(world.s2.x, world.s2.velocity);
-    world.s3.y = sc.moveScanner(world.s3.y, world.s3.velocity);
+    world.s1.x = sc.moveHorizontalScanner(world.s1.x, world.s1);
+    world.s2.x = sc.moveHorizontalScanner(world.s2.x, world.s2);
+    world.s3.y = sc.moveVerticalScanner(world.s3.y, world.s3);
 }
 
-function decideScannerColor(isOverlapped) {
-    const ALPHA = 0.5;
-    return isOverlapped ? r.ColorAlpha(r.RED, ALPHA) : r.WHITE;
-}
-
-function determineScannersColours(world) {
-    world.s1.color = decideScannerColor(sc.isOverlapping(world.s1, world.p1, world.p2));
-    world.s2.color = decideScannerColor(sc.isOverlapping(world.s2, world.p1, world.p2));
-    world.s3.color = decideScannerColor(sc.detectOverlap(world.s3.y, world.s3.height, world.p3.y, world.p3.height));
+function determineScannersOverlapping(world) {
+    world.s1.isDetected = sc.isOverlapping(world.s1, world.p1, world.p2);
+    world.s2.isDetected = sc.isOverlapping(world.s2, world.p1, world.p2);
+    world.s3.isDetected = sc.detectOverlap(world.s3.y, world.s3.height, world.p3.y, world.p3.height);
 }
 
 function update(world) {
     moveScanners(world);
-    updateVelocities(world);
-    determineScannersColours(world);
+    determineScannersOverlapping(world);
 }
 
 function drawParticles(world) {
-    r.DrawRectangleRec(world.p1, r.SKYBLUE);
-    r.DrawRectangleRec(world.p2, r.SKYBLUE);
-    r.DrawRectangleRec(world.p3, r.SKYBLUE);
+    p.drawParticle(world.p1);
+    p.drawParticle(world.p2);
+    p.drawParticle(world.p3);
 }
 
 function drawScanners(world) {
-    r.DrawRectangleRec(world.s1, world.s1.color);
-    r.DrawRectangleRec(world.s2, world.s2.color);
-    r.DrawRectangleRec(world.s3, world.s3.color);
+    sc.drawScanner(world.s1);
+    sc.drawScanner(world.s2);
+    sc.drawScanner(world.s3);
 }
 
 function draw(world) {
