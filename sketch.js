@@ -14,9 +14,9 @@ function setup() {
     world.p2 = p.createParticle(600, 0, 20, world.HEIGHT);
     world.p3 = p.createParticle(0, 350, world.WIDTH, 20);
 
-    world.s1 = sc.createScanner(0, 0, 40, world.HEIGHT, 0, 0, 3);
-    world.s2 = sc.createScanner((world.WIDTH / 2), 0, 40, world.HEIGHT, (world.WIDTH / 2), 0, 6);
-    world.s3 = sc.createScanner(0, 0, world.WIDTH, 40, 0, 0, 2);
+    world.s1 = sc.createScanner(0, 0, 40, world.HEIGHT, 0, 0, 2);
+    world.s2 = sc.createScanner((world.WIDTH / 2), 0, 40, world.HEIGHT, (world.WIDTH / 2), 0, 3);
+    world.s3 = sc.createScanner(0, 0, world.WIDTH, 40, 0, 0, 5);
 
     world.s1.rightEdge = sc.getRightEdge((world.WIDTH / 2), world.s1.width);
     world.s2.rightEdge = sc.getRightEdge(world.WIDTH, world.s2.width);
