@@ -6,12 +6,14 @@ function calculateVelocity(currentPosition, sc) {
     return isInsideRange ? -sc.velocity : sc.velocity;
 }
 
-function createScanner(x, y, width, height, velocity = 5,) {
+function createScanner(x, y, width, height, leftEdge, rightEdge, velocity = 5) {
     return {
         x,
         y,
         width,
         height,
+        leftEdge,
+        rightEdge,
         velocity,
         color: r.WHITE,
     }
@@ -21,8 +23,13 @@ function moveScanner(currentPosition, velocity) {
     return currentPosition + velocity;
 }
 
+function getRightEdge(rightEnding, size) {
+    return rightEnding - size;
+}
+
 module.exports = {
     moveScanner,
     createScanner,
-    calculateVelocity
+    calculateVelocity,
+    getRightEdge
 }

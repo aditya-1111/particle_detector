@@ -14,5 +14,5 @@ function detectOverlap(xOfRangeA, rangeAWidth, xOfRangeB, rangeBWidth) {
 
 module.exports = {
     isOverlapping,
-    detectOverlap
+    detectOverlap,
 };
